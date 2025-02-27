@@ -55,6 +55,14 @@ await for (final sseEvent in client.streamStatefulRun(thread.Id, statefulRequest
 }
 ```
 
+## Social Media
+
+#### LinkedIn:
+https://www.linkedin.com/in/gerald-parker-b7948050/
+
+
+#### Youtube:
+https://www.youtube.com/@esoterictech
 
 ## Additional information
 
