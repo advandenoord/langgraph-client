@@ -1,0 +1,22 @@
+name: langgraph_client
+description: A Dart client for the LangGraph API.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.6.0
+
+# Add regular dependencies here.
+dependencies:
+  json_annotation: ^4.9.0
+  equatable: ^2.0.7
+  sse_stream: ^1.0.2
+
+  # path: ^1.8.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.24.0
+  build_runner: ^2.4.13
+  json_serializable: ^6.9.0
+  mockito: ^5.4.4
