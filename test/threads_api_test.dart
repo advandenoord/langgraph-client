@@ -7,7 +7,6 @@ import 'package:mockito/mockito.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
-
 // Generate mocks
 @GenerateMocks([http.Client])
 import 'threads_api_test.mocks.dart';
@@ -31,10 +30,12 @@ void main() {
     test('initializes with correct parameters', () {
       expect(client.baseUrl, equals(baseUrl));
       expect(client.apiKey, equals(apiKey));
-      expect(client.headers, equals({
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $apiKey',
-      }));
+      expect(
+          client.headers,
+          equals({
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $apiKey',
+          }));
     });
 
     test('initializes without apiKey', () {
@@ -42,9 +43,11 @@ void main() {
         baseUrl: baseUrl,
         client: mockClient,
       );
-      expect(clientWithoutKey.headers, equals({
-        'Content-Type': 'application/json',
-      }));
+      expect(
+          clientWithoutKey.headers,
+          equals({
+            'Content-Type': 'application/json',
+          }));
     });
 
     test('LangGraphApiException formats message correctly', () {
@@ -69,8 +72,7 @@ void main() {
           Uri.parse('$baseUrl/threads'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async =>
-            http.Response(
+        )).thenAnswer((_) async => http.Response(
               jsonEncode(mockResponse),
               200,
             ));
@@ -101,16 +103,15 @@ void main() {
           Uri.parse('$baseUrl/threads'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async =>
-            http.Response(
+        )).thenAnswer((_) async => http.Response(
               'Not found',
               404,
             ));
 
         expect(
-              () => client.createThread(),
+          () => client.createThread(),
           throwsA(isA<LangGraphApiException>().having(
-                (e) => e.statusCode,
+            (e) => e.statusCode,
             'statusCode',
             404,
           )),
@@ -141,8 +142,7 @@ void main() {
           Uri.parse('$baseUrl/threads/search'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async =>
-            http.Response(
+        )).thenAnswer((_) async => http.Response(
               jsonEncode(mockResponse),
               200,
             ));
@@ -188,8 +188,7 @@ void main() {
         when(mockClient.get(
           Uri.parse('$baseUrl/threads/thread_123/state'),
           headers: client.headers,
-        )).thenAnswer((_) async =>
-            http.Response(
+        )).thenAnswer((_) async => http.Response(
               jsonEncode(mockResponse),
               200,
             ));
@@ -210,8 +209,7 @@ void main() {
           Uri.parse('$baseUrl/threads/thread_123/state'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async =>
-            http.Response(
+        )).thenAnswer((_) async => http.Response(
               jsonEncode(mockResponse),
               200,
             ));
@@ -274,8 +272,7 @@ void main() {
         when(mockClient.get(
           Uri.parse('$baseUrl/threads/thread_123/history?limit=5'),
           headers: client.headers,
-        )).thenAnswer((_) async =>
-            http.Response(
+        )).thenAnswer((_) async => http.Response(
               jsonEncode(mockResponse),
               200,
             ));
@@ -305,8 +302,7 @@ void main() {
         when(mockClient.post(
           Uri.parse('$baseUrl/threads/thread_123/copy'),
           headers: client.headers,
-        )).thenAnswer((_) async =>
-            http.Response(
+        )).thenAnswer((_) async => http.Response(
               jsonEncode(mockResponse),
               200,
             ));

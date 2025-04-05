@@ -25,7 +25,8 @@ void streamStatefulRun() async {
     streamMode: 'messages',
   );
 
-  await for (final sseEvent in client.streamStatefulRun(thread.threadId, statefulRequest)) {
+  await for (final sseEvent
+      in client.streamStatefulRun(thread.threadId, statefulRequest)) {
     print(sseEvent);
   }
 }

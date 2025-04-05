@@ -72,7 +72,8 @@ class CronCreate {
     this.multitaskStrategy = 'reject',
   });
 
-  factory CronCreate.fromJson(Map<String, dynamic> json) => _$CronCreateFromJson(json);
+  factory CronCreate.fromJson(Map<String, dynamic> json) =>
+      _$CronCreateFromJson(json);
 
   Map<String, dynamic> toJson() => _$CronCreateToJson(this);
 }
@@ -95,7 +96,8 @@ class CronSearch {
     this.offset = 0,
   });
 
-  factory CronSearch.fromJson(Map<String, dynamic> json) => _$CronSearchFromJson(json);
+  factory CronSearch.fromJson(Map<String, dynamic> json) =>
+      _$CronSearchFromJson(json);
 
   Map<String, dynamic> toJson() => _$CronSearchToJson(this);
 }

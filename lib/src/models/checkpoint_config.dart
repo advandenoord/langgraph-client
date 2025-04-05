@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'checkpoint_config.g.dart';
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class CheckpointConfig extends Equatable{
+class CheckpointConfig extends Equatable {
   @JsonKey(name: 'thread_id')
   final String? threadId;
 
@@ -44,7 +44,8 @@ class CheckpointConfig extends Equatable{
   }
 
   @override
-  List<Object?> get props => [threadId, checkpointNs, checkpointId, checkpointMap];
+  List<Object?> get props =>
+      [threadId, checkpointNs, checkpointId, checkpointMap];
 
   @override
   String toString() {

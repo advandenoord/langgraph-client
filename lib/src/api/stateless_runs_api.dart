@@ -8,8 +8,8 @@ import '../models/run.dart';
 /// Stateless Runs API Extension
 extension StatelessRunsApi on LangGraphClient {
   Future<Map<String, dynamic>> createBackgroundRun(
-      RunCreateStateless request,
-      ) async {
+    RunCreateStateless request,
+  ) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/runs'),
@@ -49,7 +49,9 @@ extension StatelessRunsApi on LangGraphClient {
         );
       }
 
-      await for (final chunk in response.stream.transform(utf8.decoder).transform(const SseEventTransformer())) {
+      await for (final chunk in response.stream
+          .transform(utf8.decoder)
+          .transform(const SseEventTransformer())) {
         yield chunk;
       }
     } catch (e) {
@@ -80,8 +82,8 @@ extension StatelessRunsApi on LangGraphClient {
   }
 
   Future<List<Map<String, dynamic>>> createRunBatch(
-      List<RunCreateStateless> requests,
-      ) async {
+    List<RunCreateStateless> requests,
+  ) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/runs/batch'),
@@ -103,4 +105,3 @@ extension StatelessRunsApi on LangGraphClient {
     }
   }
 }
-

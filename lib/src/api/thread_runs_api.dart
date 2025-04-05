@@ -7,10 +7,10 @@ import '../models/run.dart';
 
 extension ThreadRunsApi on LangGraphClient {
   Future<List<Run>> listStatefulRuns(
-      String threadId, {
-        int limit = 10,
-        int offset = 0,
-      }) async {
+    String threadId, {
+    int limit = 10,
+    int offset = 0,
+  }) async {
     try {
       final queryParams = {
         'limit': limit.toString(),
@@ -39,9 +39,9 @@ extension ThreadRunsApi on LangGraphClient {
 
   /// Create a run in existing thread, return the run ID immediately. Don't wait for the final run output.
   Future<Run> createStatefulBackgroundRun(
-      String threadId,
-      RunCreateStateful request,
-      ) async {
+    String threadId,
+    RunCreateStateful request,
+  ) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/runs'),
@@ -64,9 +64,9 @@ extension ThreadRunsApi on LangGraphClient {
 
   /// Create a run in existing thread. Stream the output.
   Stream<SseEvent> streamStatefulRun(
-      String threadId,
-      RunCreateStateful request,
-      ) async* {
+    String threadId,
+    RunCreateStateful request,
+  ) async* {
     try {
       final req = http.Request(
         'POST',
@@ -79,7 +79,9 @@ extension ThreadRunsApi on LangGraphClient {
 
       if (response.statusCode == 200) {
         // Get the response as a stream of bytes and transform it
-        await for (final chunk in response.stream.transform(utf8.decoder).transform(const SseEventTransformer())) {
+        await for (final chunk in response.stream
+            .transform(utf8.decoder)
+            .transform(const SseEventTransformer())) {
           yield chunk;
         }
       } else {
@@ -96,9 +98,9 @@ extension ThreadRunsApi on LangGraphClient {
 
   /// Create a run in existing thread. Wait for the final output and then return it.
   Future<Map<String, dynamic>> waitForStatefulRun(
-      String threadId,
-      RunCreateStateful request,
-      ) async {
+    String threadId,
+    RunCreateStateful request,
+  ) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/runs/wait'),
@@ -141,11 +143,11 @@ extension ThreadRunsApi on LangGraphClient {
   }
 
   Future<void> cancelStatefulRun(
-      String threadId,
-      String runId, {
-        bool wait = false,
-        String action = 'interrupt',
-      }) async {
+    String threadId,
+    String runId, {
+    bool wait = false,
+    String action = 'interrupt',
+  }) async {
     try {
       final queryParams = {
         'wait': wait.toString(),

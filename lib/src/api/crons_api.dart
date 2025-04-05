@@ -26,9 +26,9 @@ extension CronApi on LangGraphClient {
   }
 
   Future<Cron> createThreadCron(
-      String threadId,
-      CronCreate request,
-      ) async {
+    String threadId,
+    CronCreate request,
+  ) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/runs/crons'),

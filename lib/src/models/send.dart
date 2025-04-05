@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'send.g.dart';
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Send extends Equatable{
+class Send extends Equatable {
   final String node;
   final Map<String, dynamic> input;
 

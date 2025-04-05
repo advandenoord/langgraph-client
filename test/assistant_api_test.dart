@@ -41,7 +41,8 @@ void main() {
           Uri.parse('$baseUrl/assistants'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final result = await client.createAssistant(
           graphId: 'graph_123',
@@ -73,8 +74,9 @@ void main() {
         )).thenAnswer((_) async => http.Response('Not found', 404));
 
         expect(
-              () => client.createAssistant(graphId: 'graph_123'),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.createAssistant(graphId: 'graph_123'),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });
@@ -104,9 +106,11 @@ void main() {
           Uri.parse('$baseUrl/assistants/search'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
-        final results = await client.searchAssistants(metadata: {'key': 'value'}, limit: 5);
+        final results =
+            await client.searchAssistants(metadata: {'key': 'value'}, limit: 5);
 
         expect(results, isA<List<Assistant>>());
         expect(results.length, equals(2));
@@ -139,7 +143,8 @@ void main() {
         when(mockClient.get(
           Uri.parse('$baseUrl/assistants/assistant_123'),
           headers: client.headers,
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final result = await client.getAssistant('assistant_123');
 
@@ -180,7 +185,8 @@ void main() {
           Uri.parse('$baseUrl/assistants/assistant_123'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final result = await client.updateAssistant(
           'assistant_123',

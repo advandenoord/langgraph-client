@@ -42,7 +42,8 @@ void main() {
           Uri.parse('$baseUrl/runs/crons'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final request = CronCreate(
           schedule: '0 0 * * *',
@@ -76,8 +77,9 @@ void main() {
         );
 
         expect(
-              () => client.createCron(request),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.createCron(request),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });
@@ -98,7 +100,8 @@ void main() {
           Uri.parse('$baseUrl/threads/thread_123/runs/crons'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final request = CronCreate(
           schedule: '0 0 * * *',
@@ -132,8 +135,9 @@ void main() {
         );
 
         expect(
-              () => client.createThreadCron('thread_123', request),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.createThreadCron('thread_123', request),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });
@@ -165,7 +169,8 @@ void main() {
           Uri.parse('$baseUrl/runs/crons/search'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final request = CronSearch(
           assistantId: 'assistant_123',
@@ -209,8 +214,9 @@ void main() {
         )).thenAnswer((_) async => http.Response('Not found', 404));
 
         expect(
-              () => client.deleteCron('cron_123'),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.deleteCron('cron_123'),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });

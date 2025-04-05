@@ -1,0 +1,52 @@
+name: Publish to pub.dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Perform a dry run to validate without publishing'
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      
+      - name: Install dependencies
+        run: dart pub get
+      
+      - name: Verify code formatting
+        run: dart format --output=none --set-exit-if-changed .
+      
+      - name: Analyze project
+        run: dart analyze
+      
+      - name: Run tests
+        run: dart test
+      
+      - name: Setup Pub Credentials
+        run: |
+          mkdir -p $HOME/.pub-cache
+          echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > $HOME/.pub-cache/credentials.json
+      
+      - name: Check package score with pana (optional)
+        run: |
+          dart pub global activate pana
+          dart pub global run pana . --no-warning || true
+      
+      - name: Publish package (dry run)
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        run: dart pub publish --dry-run
+      
+      - name: Publish package
+        if: ${{ github.event.inputs.dry_run == 'false' }}
+        run: dart pub publish -f

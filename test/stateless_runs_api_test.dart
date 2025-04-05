@@ -46,7 +46,8 @@ void main() {
           Uri.parse('$baseUrl/runs'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final request = RunCreateStateless(
           assistantId: 'assistant_123',
@@ -78,8 +79,9 @@ void main() {
         );
 
         expect(
-              () => client.createBackgroundRun(request),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.createBackgroundRun(request),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });
@@ -103,7 +105,8 @@ void main() {
         await expectLater(
           stream,
           emitsInOrder([
-            isA<SseEvent>().having((e) => e.data, 'data', contains('"key": "value"')),
+            isA<SseEvent>()
+                .having((e) => e.data, 'data', contains('"key": "value"')),
             emitsDone,
           ]),
         );
@@ -124,8 +127,9 @@ void main() {
         );
 
         expect(
-              () => client.streamRun(request).toList(),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.streamRun(request).toList(),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });
@@ -148,7 +152,8 @@ void main() {
           Uri.parse('$baseUrl/runs/wait'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final request = RunCreateStateless(
           assistantId: 'assistant_123',
@@ -180,8 +185,9 @@ void main() {
         );
 
         expect(
-              () => client.waitForRun(request),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.waitForRun(request),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });
@@ -217,7 +223,8 @@ void main() {
           Uri.parse('$baseUrl/runs/batch'),
           headers: client.headers,
           body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(jsonEncode(mockResponse), 200));
+        )).thenAnswer(
+            (_) async => http.Response(jsonEncode(mockResponse), 200));
 
         final requests = [
           RunCreateStateless(
@@ -261,8 +268,9 @@ void main() {
         ];
 
         expect(
-              () => client.createRunBatch(requests),
-          throwsA(isA<LangGraphApiException>().having((e) => e.statusCode, 'statusCode', 404)),
+          () => client.createRunBatch(requests),
+          throwsA(isA<LangGraphApiException>()
+              .having((e) => e.statusCode, 'statusCode', 404)),
         );
       });
     });

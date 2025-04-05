@@ -5,7 +5,7 @@ import 'send.dart';
 part 'command.g.dart';
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
-class Command extends Equatable{
+class Command extends Equatable {
   final Map<String, dynamic>? update;
   final dynamic resume;
 
@@ -18,7 +18,8 @@ class Command extends Equatable{
     this.send,
   });
 
-  factory Command.fromJson(Map<String, dynamic> json) => _$CommandFromJson(json);
+  factory Command.fromJson(Map<String, dynamic> json) =>
+      _$CommandFromJson(json);
 
   Map<String, dynamic> toJson() => _$CommandToJson(this);
 
