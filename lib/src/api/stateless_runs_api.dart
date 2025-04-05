@@ -104,4 +104,41 @@ extension StatelessRunsApi on LangGraphClient {
       throw LangGraphApiException('Failed to create run batch: $e');
     }
   }
+
+  /// Cancels a stateless run.
+  ///
+  /// [runId] is the unique identifier of the run to cancel.
+  /// [wait] specifies whether to wait for the run to be fully cancelled before returning (default: false).
+  /// [action] specifies the action to take: 'interrupt' (default) or 'terminate'.
+  ///
+  /// Returns void on successful cancellation.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<void> cancelRun(
+    String runId, {
+    bool wait = false,
+    String action = 'interrupt',
+  }) async {
+    try {
+      final queryParams = {
+        'wait': wait.toString(),
+        'action': action,
+      };
+
+      final response = await client.post(
+        Uri.parse('$baseUrl/runs/cancel')
+            .replace(queryParameters: {...queryParams, 'run_id': runId}),
+        headers: headers,
+      );
+
+      if (response.statusCode != 200) {
+        throw LangGraphApiException(
+          'Failed to cancel run',
+          response.statusCode,
+        );
+      }
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to cancel run: $e');
+    }
+  }
 }

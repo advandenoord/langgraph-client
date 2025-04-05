@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'client.dart';
 import '../models/assistant.dart';
+import '../models/assistant_version.dart';
 
 /// Extension providing assistant management functionality for [LangGraphClient].
 ///
 /// This extension enables creation, retrieval, updating, deletion, and searching
 /// of LangGraph assistants, which represent configurable instances of graphs
-/// that can be used to process messages in threads.
+/// that can be used to process messages in threads. It also provides access to
+/// assistant versioning, schemas, and subgraph operations.
 extension AssistantApi on LangGraphClient {
   /// Creates a new assistant with the specified configuration.
   ///
@@ -191,6 +193,185 @@ extension AssistantApi on LangGraphClient {
     } catch (e) {
       if (e is LangGraphApiException) rethrow;
       throw LangGraphApiException('Failed to update assistant: $e');
+    }
+  }
+
+  /// Lists all versions of an assistant.
+  ///
+  /// [assistantId] is the unique identifier of the assistant.
+  ///
+  /// Returns a list of assistant versions.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<List<AssistantVersion>> listAssistantVersions(
+      String assistantId) async {
+    try {
+      final response = await client.get(
+        Uri.parse('$baseUrl/assistants/$assistantId/versions'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List) {
+          return data.map((json) => AssistantVersion.fromJson(json)).toList();
+        } else if (data is Map && data.containsKey('versions')) {
+          return (data['versions'] as List)
+              .map((json) => AssistantVersion.fromJson(json))
+              .toList();
+        }
+        return [];
+      }
+      throw LangGraphApiException(
+        'Failed to list assistant versions',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to list assistant versions: $e');
+    }
+  }
+
+  /// Gets the latest version of an assistant.
+  ///
+  /// [assistantId] is the unique identifier of the assistant.
+  ///
+  /// Returns the latest assistant version.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<AssistantVersion> getLatestAssistantVersion(String assistantId) async {
+    try {
+      final response = await client.get(
+        Uri.parse('$baseUrl/assistants/$assistantId/latest'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return AssistantVersion.fromJson(jsonDecode(response.body));
+      }
+      throw LangGraphApiException(
+        'Failed to get latest assistant version',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to get latest assistant version: $e');
+    }
+  }
+
+  /// Gets the graph definition for an assistant.
+  ///
+  /// [assistantId] is the unique identifier of the assistant.
+  ///
+  /// Returns the graph definition as a JSON map.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<Map<String, dynamic>> getAssistantGraph(String assistantId) async {
+    try {
+      final response = await client.get(
+        Uri.parse('$baseUrl/assistants/$assistantId/graph'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw LangGraphApiException(
+        'Failed to get assistant graph',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to get assistant graph: $e');
+    }
+  }
+
+  /// Gets the schema information for an assistant.
+  ///
+  /// [assistantId] is the unique identifier of the assistant.
+  ///
+  /// Returns the assistant's input and output schemas.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<AssistantSchema> getAssistantSchemas(String assistantId) async {
+    try {
+      final response = await client.get(
+        Uri.parse('$baseUrl/assistants/$assistantId/schemas'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return AssistantSchema.fromJson(jsonDecode(response.body));
+      }
+      throw LangGraphApiException(
+        'Failed to get assistant schemas',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to get assistant schemas: $e');
+    }
+  }
+
+  /// Lists subgraphs for an assistant.
+  ///
+  /// [assistantId] is the unique identifier of the assistant.
+  ///
+  /// Returns a list of subgraph namespaces.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<List<String>> listAssistantSubgraphs(String assistantId) async {
+    try {
+      final response = await client.get(
+        Uri.parse('$baseUrl/assistants/$assistantId/subgraphs'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List) {
+          return data.cast<String>();
+        } else if (data is Map && data.containsKey('namespaces')) {
+          return (data['namespaces'] as List).cast<String>();
+        }
+        return [];
+      }
+      throw LangGraphApiException(
+        'Failed to list assistant subgraphs',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to list assistant subgraphs: $e');
+    }
+  }
+
+  /// Gets a specific subgraph for an assistant.
+  ///
+  /// [assistantId] is the unique identifier of the assistant.
+  /// [namespace] is the namespace of the subgraph to retrieve.
+  ///
+  /// Returns the subgraph definition.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<AssistantSubgraph> getAssistantSubgraph(
+    String assistantId,
+    String namespace,
+  ) async {
+    try {
+      final response = await client.get(
+        Uri.parse('$baseUrl/assistants/$assistantId/subgraphs/$namespace'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return AssistantSubgraph(
+          namespace: namespace,
+          graph: data,
+        );
+      }
+      throw LangGraphApiException(
+        'Failed to get assistant subgraph',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to get assistant subgraph: $e');
     }
   }
 }

@@ -6,9 +6,10 @@ import '../models/thread.dart';
 
 /// Extension providing thread management functionality for [LangGraphClient].
 ///
-/// This extension enables creation, searching, state management, and copying of
+/// This extension enables creation, retrieval, updating, deletion, searching, and copying of
 /// LangGraph threads, which are containers for persistent state and message
-/// history used by assistants during runs.
+/// history used by assistants during runs. It also provides state management operations
+/// including checkpoints and bulk updates.
 extension ThreadApi on LangGraphClient {
   /// Creates a new thread for storing state and message history.
   ///
@@ -47,6 +48,57 @@ extension ThreadApi on LangGraphClient {
     } catch (e) {
       if (e is LangGraphApiException) rethrow;
       throw LangGraphApiException('Failed to create thread: $e');
+    }
+  }
+
+  /// Gets a thread by its ID.
+  ///
+  /// [threadId] is the unique identifier of the thread to retrieve.
+  ///
+  /// Returns the requested [Thread] object.
+  /// Throws [LangGraphApiException] if the thread is not found or the request fails.
+  Future<Thread> getThread(String threadId) async {
+    try {
+      final response = await client.get(
+        Uri.parse('$baseUrl/threads/$threadId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return Thread.fromJson(jsonDecode(response.body));
+      }
+      throw LangGraphApiException(
+        'Failed to get thread',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to get thread: $e');
+    }
+  }
+
+  /// Deletes a thread by its ID.
+  ///
+  /// [threadId] is the unique identifier of the thread to delete.
+  ///
+  /// Returns void on successful deletion.
+  /// Throws [LangGraphApiException] if the thread is not found or the request fails.
+  Future<void> deleteThread(String threadId) async {
+    try {
+      final response = await client.delete(
+        Uri.parse('$baseUrl/threads/$threadId'),
+        headers: headers,
+      );
+
+      if (response.statusCode != 200) {
+        throw LangGraphApiException(
+          'Failed to delete thread',
+          response.statusCode,
+        );
+      }
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to delete thread: $e');
     }
   }
 
@@ -164,6 +216,67 @@ extension ThreadApi on LangGraphClient {
     } catch (e) {
       if (e is LangGraphApiException) rethrow;
       throw LangGraphApiException('Failed to update thread state: $e');
+    }
+  }
+
+  /// Updates multiple threads' states in a single operation.
+  ///
+  /// [updates] is a map where keys are thread IDs and values are the new state values.
+  ///
+  /// Returns a map with thread IDs as keys and their new state values as values.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<Map<String, dynamic>> bulkUpdateThreadState(
+      Map<String, dynamic> updates) async {
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/threads/state/bulk'),
+        headers: headers,
+        body: jsonEncode(updates),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw LangGraphApiException(
+        'Failed to bulk update thread states',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to bulk update thread states: $e');
+    }
+  }
+
+  /// Gets a specific checkpoint from a thread's state history.
+  ///
+  /// [threadId] is the unique identifier of the thread.
+  /// [checkpointId] is the identifier of the checkpoint to retrieve.
+  ///
+  /// Returns the thread state at the specified checkpoint.
+  /// Throws [LangGraphApiException] if the request fails.
+  Future<ThreadState> getThreadStateCheckpoint(
+      String threadId, String checkpointId) async {
+    try {
+      final queryParams = {
+        'checkpoint_id': checkpointId,
+      };
+
+      final response = await client.get(
+        Uri.parse('$baseUrl/threads/$threadId/state/checkpoint')
+            .replace(queryParameters: queryParams),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return ThreadState.fromJson(jsonDecode(response.body));
+      }
+      throw LangGraphApiException(
+        'Failed to get thread state checkpoint',
+        response.statusCode,
+      );
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to get thread state checkpoint: $e');
     }
   }
 

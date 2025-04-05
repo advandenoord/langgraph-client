@@ -190,4 +190,85 @@ extension ThreadRunsApi on LangGraphClient {
       throw LangGraphApiException('Failed to delete run: $e');
     }
   }
+
+  /// Joins an existing streaming run to continue receiving events.
+  ///
+  /// This allows reconnecting to a run that is already in progress and
+  /// was originally created with streaming enabled.
+  ///
+  /// [threadId] is the ID of the thread the run belongs to.
+  /// [runId] is the ID of the run to join.
+  ///
+  /// Returns a stream of server-sent events from the run.
+  /// Throws [LangGraphApiException] if the request fails.
+  Stream<SseEvent> joinStatefulRunStream(
+    String threadId,
+    String runId,
+  ) async* {
+    try {
+      final req = http.Request(
+        'GET',
+        Uri.parse('$baseUrl/threads/$threadId/runs/$runId/join'),
+      )..headers.addAll(headers);
+
+      final response = await client.send(req);
+
+      if (response.statusCode == 200) {
+        // Get the response as a stream of bytes and transform it
+        await for (final chunk in response.stream
+            .transform(utf8.decoder)
+            .transform(const SseEventTransformer())) {
+          yield chunk;
+        }
+      } else {
+        throw LangGraphApiException(
+          'Failed to join run stream',
+          response.statusCode,
+        );
+      }
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to join run stream: $e');
+    }
+  }
+
+  /// Streams an existing run from the beginning.
+  ///
+  /// This replays all events for an existing run from the start.
+  ///
+  /// [threadId] is the ID of the thread the run belongs to.
+  /// [runId] is the ID of the run to stream.
+  ///
+  /// Returns a stream of server-sent events from the run.
+  /// Throws [LangGraphApiException] if the request fails.
+  Stream<SseEvent> streamExistingStatefulRun(
+    String threadId,
+    String runId,
+  ) async* {
+    try {
+      final req = http.Request(
+        'GET',
+        Uri.parse('$baseUrl/threads/$threadId/runs/$runId/stream'),
+      )..headers.addAll(headers);
+
+      final response = await client.send(req);
+
+      if (response.statusCode == 200) {
+        // Get the response as a stream of bytes and transform it
+        await for (final chunk in response.stream
+            .transform(utf8.decoder)
+            .transform(const SseEventTransformer())) {
+          yield chunk;
+        }
+      } else {
+        throw LangGraphApiException(
+          'Failed to stream existing run',
+          response.statusCode,
+        );
+      }
+    } catch (e) {
+      if (e is LangGraphApiException) rethrow;
+      throw LangGraphApiException('Failed to stream existing run: $e');
+    }
+  }
 }
