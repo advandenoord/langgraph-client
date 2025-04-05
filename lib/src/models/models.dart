@@ -11,6 +11,7 @@
 ///
 /// These models correspond to the entities in the LangGraph API and are used
 /// by the client to serialize and deserialize request and response data.
+library;
 
 export 'assistant.dart';
 export 'checkpoint_config.dart';
