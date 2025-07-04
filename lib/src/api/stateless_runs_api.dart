@@ -7,13 +7,12 @@ import '../models/run.dart';
 
 /// Stateless Runs API Extension
 extension StatelessRunsApi on LangGraphClient {
-  Future<Map<String, dynamic>> createBackgroundRun(
-    RunCreateStateless request,
-  ) async {
+  Future<Map<String, dynamic>> createBackgroundRun(RunCreateStateless request,
+      {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/runs'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -30,14 +29,16 @@ extension StatelessRunsApi on LangGraphClient {
     }
   }
 
-  Stream<SseEvent> streamRun(RunCreateStateless request) async* {
+  Stream<SseEvent> streamRun(RunCreateStateless request,
+      {String? token}) async* {
     try {
       final streamedRequest = http.Request(
         'POST',
         Uri.parse('$baseUrl/runs/stream'),
       );
 
-      streamedRequest.headers.addAll(headers);
+      streamedRequest.headers
+          .addAll(token == null ? headers : getHeadersWithToken(token: token));
       streamedRequest.body = jsonEncode(request.toJson());
 
       final response = await client.send(streamedRequest);
@@ -60,11 +61,12 @@ extension StatelessRunsApi on LangGraphClient {
     }
   }
 
-  Future<Map<String, dynamic>> waitForRun(RunCreateStateless request) async {
+  Future<Map<String, dynamic>> waitForRun(RunCreateStateless request,
+      {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/runs/wait'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -82,12 +84,12 @@ extension StatelessRunsApi on LangGraphClient {
   }
 
   Future<List<Map<String, dynamic>>> createRunBatch(
-    List<RunCreateStateless> requests,
-  ) async {
+      List<RunCreateStateless> requests,
+      {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/runs/batch'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(requests.map((r) => r.toJson()).toList()),
       );
 
@@ -110,6 +112,7 @@ extension StatelessRunsApi on LangGraphClient {
   /// [runId] is the unique identifier of the run to cancel.
   /// [wait] specifies whether to wait for the run to be fully cancelled before returning (default: false).
   /// [action] specifies the action to take: 'interrupt' (default) or 'terminate'.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns void on successful cancellation.
   /// Throws [LangGraphApiException] if the request fails.
@@ -117,6 +120,7 @@ extension StatelessRunsApi on LangGraphClient {
     String runId, {
     bool wait = false,
     String action = 'interrupt',
+    String? token,
   }) async {
     try {
       final queryParams = {
@@ -127,7 +131,7 @@ extension StatelessRunsApi on LangGraphClient {
       final response = await client.post(
         Uri.parse('$baseUrl/runs/cancel')
             .replace(queryParameters: {...queryParams, 'run_id': runId}),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode != 200) {

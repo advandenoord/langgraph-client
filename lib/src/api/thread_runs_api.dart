@@ -10,6 +10,7 @@ extension ThreadRunsApi on LangGraphClient {
     String threadId, {
     int limit = 10,
     int offset = 0,
+    String? token,
   }) async {
     try {
       final queryParams = {
@@ -20,7 +21,7 @@ extension ThreadRunsApi on LangGraphClient {
       final response = await client.get(
         Uri.parse('$baseUrl/threads/$threadId/runs')
             .replace(queryParameters: queryParams),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -40,12 +41,13 @@ extension ThreadRunsApi on LangGraphClient {
   /// Create a run in existing thread, return the run ID immediately. Don't wait for the final run output.
   Future<Run> createStatefulBackgroundRun(
     String threadId,
-    RunCreateStateful request,
-  ) async {
+    RunCreateStateful request, {
+    String? token,
+  }) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/runs'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -66,13 +68,14 @@ extension ThreadRunsApi on LangGraphClient {
   Stream<SseEvent> streamStatefulRun(
     String threadId,
     RunCreateStateful request,
+    {String? token}
   ) async* {
     try {
       final req = http.Request(
         'POST',
         Uri.parse('$baseUrl/threads/$threadId/runs/stream'),
       )
-        ..headers.addAll(headers)
+        ..headers.addAll(token == null ? headers : getHeadersWithToken(token: token))
         ..body = jsonEncode(request.toJson());
 
       final response = await client.send(req);
@@ -100,11 +103,12 @@ extension ThreadRunsApi on LangGraphClient {
   Future<Map<String, dynamic>> waitForStatefulRun(
     String threadId,
     RunCreateStateful request,
+    {String? token}
   ) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/runs/wait'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -122,11 +126,11 @@ extension ThreadRunsApi on LangGraphClient {
   }
 
   /// Get a run by ID.
-  Future<Run> getStatefulRun(String threadId, String runId) async {
+  Future<Run> getStatefulRun(String threadId, String runId, {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/threads/$threadId/runs/$runId'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -145,6 +149,7 @@ extension ThreadRunsApi on LangGraphClient {
   Future<void> cancelStatefulRun(
     String threadId,
     String runId, {
+    String? token,
     bool wait = false,
     String action = 'interrupt',
   }) async {
@@ -157,7 +162,7 @@ extension ThreadRunsApi on LangGraphClient {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/runs/$runId/cancel')
             .replace(queryParameters: queryParams),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode != 200) {
@@ -172,11 +177,11 @@ extension ThreadRunsApi on LangGraphClient {
     }
   }
 
-  Future<void> deleteStatefulRun(String threadId, String runId) async {
+  Future<void> deleteStatefulRun(String threadId, String runId, {String? token}) async {
     try {
       final response = await client.delete(
         Uri.parse('$baseUrl/threads/$threadId/runs/$runId'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode != 200) {
@@ -198,18 +203,20 @@ extension ThreadRunsApi on LangGraphClient {
   ///
   /// [threadId] is the ID of the thread the run belongs to.
   /// [runId] is the ID of the run to join.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a stream of server-sent events from the run.
   /// Throws [LangGraphApiException] if the request fails.
   Stream<SseEvent> joinStatefulRunStream(
     String threadId,
     String runId,
+    {String? token}
   ) async* {
     try {
       final req = http.Request(
         'GET',
         Uri.parse('$baseUrl/threads/$threadId/runs/$runId/join'),
-      )..headers.addAll(headers);
+      )..headers.addAll(token == null ? headers : getHeadersWithToken(token: token));
 
       final response = await client.send(req);
 
@@ -238,18 +245,20 @@ extension ThreadRunsApi on LangGraphClient {
   ///
   /// [threadId] is the ID of the thread the run belongs to.
   /// [runId] is the ID of the run to stream.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a stream of server-sent events from the run.
   /// Throws [LangGraphApiException] if the request fails.
   Stream<SseEvent> streamExistingStatefulRun(
     String threadId,
     String runId,
+    {String? token}
   ) async* {
     try {
       final req = http.Request(
         'GET',
         Uri.parse('$baseUrl/threads/$threadId/runs/$runId/stream'),
-      )..headers.addAll(headers);
+      )..headers.addAll(token == null ? headers : getHeadersWithToken(token: token));
 
       final response = await client.send(req);
 

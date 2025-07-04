@@ -4,11 +4,11 @@ import 'client.dart';
 import '../models/cron.dart';
 
 extension CronApi on LangGraphClient {
-  Future<Cron> createCron(CronCreate request) async {
+  Future<Cron> createCron(CronCreate request, {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/runs/crons'),
-        headers: headers,
+         headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -28,11 +28,12 @@ extension CronApi on LangGraphClient {
   Future<Cron> createThreadCron(
     String threadId,
     CronCreate request,
+    {String? token}
   ) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/runs/crons'),
-        headers: headers,
+         headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -49,11 +50,11 @@ extension CronApi on LangGraphClient {
     }
   }
 
-  Future<List<Cron>> searchCrons(CronSearch request) async {
+  Future<List<Cron>> searchCrons(CronSearch request, {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/runs/crons/search'),
-        headers: headers,
+         headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -71,11 +72,11 @@ extension CronApi on LangGraphClient {
     }
   }
 
-  Future<void> deleteCron(String cronId) async {
+  Future<void> deleteCron(String cronId, {String? token}) async {
     try {
       final response = await client.delete(
         Uri.parse('$baseUrl/runs/crons/$cronId'),
-        headers: headers,
+         headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode != 200) {

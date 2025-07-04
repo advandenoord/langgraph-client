@@ -39,10 +39,26 @@ class LangGraphClient {
   /// Returns the headers to be included in all API requests.
   ///
   /// These headers include the Content-Type and, if an API key is
-  /// provided, the Authorization header with the Bearer token.
+  /// provided, the Authorization header with the Bearer token,
+  /// and the x-api-key header with the API key (for deployed versions
+  /// of LangGraph applications).
   Map<String, String> get headers => {
         'Content-Type': 'application/json',
         if (apiKey != null) 'Authorization': 'Bearer $apiKey',
+        if (apiKey != null) 'x-api-key': '$apiKey',
+      };
+
+  /// Returns the headers to be included in all API requests.
+  ///
+  /// These headers include the Content-Type and, if an API key is
+  /// provided, the Authorization header with the Bearer token,
+  /// and the x-api-key header with the API key, and the AuthorizationToken
+  /// header with the Bearer token that can be used by LangGraph Auth.
+  Map<String, String> getHeadersWithToken({required String token}) => {
+        'Content-Type': 'application/json',
+        if (apiKey != null) 'x-api-key': '$apiKey',
+        if (apiKey != null) 'Authorization': 'Bearer $apiKey',
+        'AuthorizationToken': 'Bearer $token',
       };
 }
 

@@ -22,11 +22,13 @@ extension AssistantApi on LangGraphClient {
   /// [metadata] is optional user-provided metadata for the assistant.
   /// [ifExists] determines behavior when an assistant with the same ID already exists. Options are 'raise', 'update', or 'ignore'.
   /// [name] is an optional name for easier identification of the assistant.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the created [Assistant] object.
   /// Throws [LangGraphApiException] if the request fails.
   Future<Assistant> createAssistant({
     required String graphId,
+    String? token,
     String? assistantId,
     AssistantConfig? config,
     Map<String, dynamic>? metadata,
@@ -36,7 +38,7 @@ extension AssistantApi on LangGraphClient {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/assistants'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode({
           if (assistantId != null) 'assistant_id': assistantId,
           'graph_id': graphId,
@@ -68,11 +70,13 @@ extension AssistantApi on LangGraphClient {
   /// [graphId] optional filter to find assistants associated with a specific graph.
   /// [limit] maximum number of results to return (default: 10).
   /// [offset] number of results to skip for pagination (default: 0).
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a list of [Assistant] objects matching the search criteria.
   /// Throws [LangGraphApiException] if the request fails.
   Future<List<Assistant>> searchAssistants({
     Map<String, dynamic>? metadata,
+    String? token,
     String? graphId,
     int limit = 10,
     int offset = 0,
@@ -80,7 +84,7 @@ extension AssistantApi on LangGraphClient {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/assistants/search'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode({
           if (metadata != null) 'metadata': metadata,
           if (graphId != null) 'graph_id': graphId,
@@ -106,14 +110,15 @@ extension AssistantApi on LangGraphClient {
   /// Retrieves an assistant by its ID.
   ///
   /// [assistantId] is the unique identifier of the assistant to retrieve.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the requested [Assistant] object.
   /// Throws [LangGraphApiException] if the assistant is not found or the request fails.
-  Future<Assistant> getAssistant(String assistantId) async {
+  Future<Assistant> getAssistant(String assistantId, {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/assistants/$assistantId'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -132,14 +137,15 @@ extension AssistantApi on LangGraphClient {
   /// Deletes an assistant by its ID.
   ///
   /// [assistantId] is the unique identifier of the assistant to delete.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns void on successful deletion.
   /// Throws [LangGraphApiException] if the assistant is not found or the request fails.
-  Future<void> deleteAssistant(String assistantId) async {
+  Future<void> deleteAssistant(String assistantId, {String? token}) async {
     try {
       final response = await client.delete(
         Uri.parse('$baseUrl/assistants/$assistantId'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode != 200) {
@@ -161,11 +167,13 @@ extension AssistantApi on LangGraphClient {
   /// [config] optional new configuration parameters for the assistant.
   /// [metadata] optional new metadata for the assistant.
   /// [name] optional new name for the assistant.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the updated [Assistant] object.
   /// Throws [LangGraphApiException] if the assistant is not found or the request fails.
   Future<Assistant> updateAssistant(
     String assistantId, {
+    String? token,
     String? graphId,
     AssistantConfig? config,
     Map<String, dynamic>? metadata,
@@ -174,7 +182,7 @@ extension AssistantApi on LangGraphClient {
     try {
       final response = await client.patch(
         Uri.parse('$baseUrl/assistants/$assistantId'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode({
           if (graphId != null) 'graph_id': graphId,
           if (config != null) 'config': config.toJson(),
@@ -199,15 +207,16 @@ extension AssistantApi on LangGraphClient {
   /// Lists all versions of an assistant.
   ///
   /// [assistantId] is the unique identifier of the assistant.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a list of assistant versions.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<List<AssistantVersion>> listAssistantVersions(
-      String assistantId) async {
+  Future<List<AssistantVersion>> listAssistantVersions(String assistantId,
+      {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/assistants/$assistantId/versions'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -234,14 +243,16 @@ extension AssistantApi on LangGraphClient {
   /// Gets the latest version of an assistant.
   ///
   /// [assistantId] is the unique identifier of the assistant.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the latest assistant version.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<AssistantVersion> getLatestAssistantVersion(String assistantId) async {
+  Future<AssistantVersion> getLatestAssistantVersion(String assistantId,
+      {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/assistants/$assistantId/latest'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -260,14 +271,16 @@ extension AssistantApi on LangGraphClient {
   /// Gets the graph definition for an assistant.
   ///
   /// [assistantId] is the unique identifier of the assistant.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the graph definition as a JSON map.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<Map<String, dynamic>> getAssistantGraph(String assistantId) async {
+  Future<Map<String, dynamic>> getAssistantGraph(String assistantId,
+      {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/assistants/$assistantId/graph'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -286,14 +299,16 @@ extension AssistantApi on LangGraphClient {
   /// Gets the schema information for an assistant.
   ///
   /// [assistantId] is the unique identifier of the assistant.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the assistant's input and output schemas.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<AssistantSchema> getAssistantSchemas(String assistantId) async {
+  Future<AssistantSchema> getAssistantSchemas(String assistantId,
+      {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/assistants/$assistantId/schemas'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -312,14 +327,16 @@ extension AssistantApi on LangGraphClient {
   /// Lists subgraphs for an assistant.
   ///
   /// [assistantId] is the unique identifier of the assistant.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a list of subgraph namespaces.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<List<String>> listAssistantSubgraphs(String assistantId) async {
+  Future<List<String>> listAssistantSubgraphs(String assistantId,
+      {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/assistants/$assistantId/subgraphs'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -345,17 +362,17 @@ extension AssistantApi on LangGraphClient {
   ///
   /// [assistantId] is the unique identifier of the assistant.
   /// [namespace] is the namespace of the subgraph to retrieve.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the subgraph definition.
   /// Throws [LangGraphApiException] if the request fails.
   Future<AssistantSubgraph> getAssistantSubgraph(
-    String assistantId,
-    String namespace,
-  ) async {
+      String assistantId, String namespace,
+      {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/assistants/$assistantId/subgraphs/$namespace'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {

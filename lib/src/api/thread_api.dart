@@ -19,6 +19,7 @@ extension ThreadApi on LangGraphClient {
   /// [threadId] is an optional custom ID for the thread. If not provided, one will be generated.
   /// [metadata] is optional user-provided metadata for the thread.
   /// [ifExists] determines behavior when a thread with the same ID already exists. Options are 'raise', 'error', or 'return_existing'.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the created [Thread] object.
   /// Throws [LangGraphApiException] if the request fails.
@@ -26,11 +27,12 @@ extension ThreadApi on LangGraphClient {
     String? threadId,
     Map<String, dynamic>? metadata,
     String ifExists = 'raise',
+    String? token,
   }) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode({
           if (threadId != null) 'thread_id': threadId,
           if (metadata != null) 'metadata': metadata,
@@ -54,14 +56,15 @@ extension ThreadApi on LangGraphClient {
   /// Gets a thread by its ID.
   ///
   /// [threadId] is the unique identifier of the thread to retrieve.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the requested [Thread] object.
   /// Throws [LangGraphApiException] if the thread is not found or the request fails.
-  Future<Thread> getThread(String threadId) async {
+  Future<Thread> getThread(String threadId, {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/threads/$threadId'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -80,14 +83,15 @@ extension ThreadApi on LangGraphClient {
   /// Deletes a thread by its ID.
   ///
   /// [threadId] is the unique identifier of the thread to delete.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns void on successful deletion.
   /// Throws [LangGraphApiException] if the thread is not found or the request fails.
-  Future<void> deleteThread(String threadId) async {
+  Future<void> deleteThread(String threadId, {String? token}) async {
     try {
       final response = await client.delete(
         Uri.parse('$baseUrl/threads/$threadId'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode != 200) {
@@ -111,6 +115,7 @@ extension ThreadApi on LangGraphClient {
   /// [status] optional filter for thread status.
   /// [limit] maximum number of results to return (default: 10).
   /// [offset] number of results to skip for pagination (default: 0).
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a list of [Thread] objects matching the search criteria.
   /// Throws [LangGraphApiException] if the request fails.
@@ -120,11 +125,12 @@ extension ThreadApi on LangGraphClient {
     String? status,
     int limit = 10,
     int offset = 0,
+    String? token,
   }) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/search'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode({
           if (metadata != null) 'metadata': metadata,
           if (values != null) 'values': values,
@@ -154,14 +160,15 @@ extension ThreadApi on LangGraphClient {
   /// which represent the current state of the graph execution.
   ///
   /// [threadId] is the unique identifier of the thread to retrieve state for.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the current [ThreadState] object for the specified thread.
   /// Throws [LangGraphApiException] if the thread is not found or the request fails.
-  Future<ThreadState> getThreadState(String threadId) async {
+  Future<ThreadState> getThreadState(String threadId, {String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/threads/$threadId/state'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -186,6 +193,7 @@ extension ThreadApi on LangGraphClient {
   /// [values] new values to store in the thread state.
   /// [checkpoint] optional checkpoint configuration for versioning thread state.
   /// [asNode] optional node name to attribute the state change to.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a map containing the updated thread state values.
   /// Throws [LangGraphApiException] if the thread is not found or the request fails.
@@ -194,11 +202,12 @@ extension ThreadApi on LangGraphClient {
     dynamic values,
     CheckpointConfig? checkpoint,
     String? asNode,
+    String? token,
   }) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/state'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode({
           if (values != null) 'values': values,
           if (checkpoint != null) 'checkpoint': checkpoint.toJson(),
@@ -222,15 +231,16 @@ extension ThreadApi on LangGraphClient {
   /// Updates multiple threads' states in a single operation.
   ///
   /// [updates] is a map where keys are thread IDs and values are the new state values.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a map with thread IDs as keys and their new state values as values.
   /// Throws [LangGraphApiException] if the request fails.
   Future<Map<String, dynamic>> bulkUpdateThreadState(
-      Map<String, dynamic> updates) async {
+      Map<String, dynamic> updates, {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/state/bulk'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(updates),
       );
 
@@ -251,11 +261,12 @@ extension ThreadApi on LangGraphClient {
   ///
   /// [threadId] is the unique identifier of the thread.
   /// [checkpointId] is the identifier of the checkpoint to retrieve.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the thread state at the specified checkpoint.
   /// Throws [LangGraphApiException] if the request fails.
   Future<ThreadState> getThreadStateCheckpoint(
-      String threadId, String checkpointId) async {
+      String threadId, String checkpointId, {String? token}) async {
     try {
       final queryParams = {
         'checkpoint_id': checkpointId,
@@ -264,7 +275,7 @@ extension ThreadApi on LangGraphClient {
       final response = await client.get(
         Uri.parse('$baseUrl/threads/$threadId/state/checkpoint')
             .replace(queryParameters: queryParams),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -288,6 +299,7 @@ extension ThreadApi on LangGraphClient {
   /// [threadId] is the unique identifier of the thread to retrieve history for.
   /// [limit] maximum number of state changes to return (default: 10).
   /// [before] optional timestamp to retrieve history before a specific point in time.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns a list of [ThreadState] objects representing the thread's state history.
   /// Throws [LangGraphApiException] if the thread is not found or the request fails.
@@ -295,6 +307,7 @@ extension ThreadApi on LangGraphClient {
     String threadId, {
     int limit = 10,
     String? before,
+    String? token,
   }) async {
     try {
       final queryParams = {
@@ -305,7 +318,7 @@ extension ThreadApi on LangGraphClient {
       final response = await client.get(
         Uri.parse('$baseUrl/threads/$threadId/history')
             .replace(queryParameters: queryParams),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -329,14 +342,15 @@ extension ThreadApi on LangGraphClient {
   /// scenarios from the same starting point.
   ///
   /// [threadId] is the unique identifier of the thread to copy.
+  /// [token] is a security token that can be used by LangGraph Auth.
   ///
   /// Returns the newly created [Thread] object that is a copy of the original.
   /// Throws [LangGraphApiException] if the thread is not found or the request fails.
-  Future<Thread> copyThread(String threadId) async {
+  Future<Thread> copyThread(String threadId, {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/$threadId/copy'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {

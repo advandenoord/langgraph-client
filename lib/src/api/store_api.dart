@@ -11,14 +11,15 @@ extension StoreApi on LangGraphClient {
   /// Creates a new item in the store.
   ///
   /// [request] contains the namespace, ID, data and optional metadata for the item.
+  /// [token] is the authentication token for the request.
   ///
   /// Returns the created [StoreItem].
   /// Throws [LangGraphApiException] if the request fails.
-  Future<StoreItem> createStoreItem(StoreItemCreate request) async {
+  Future<StoreItem> createStoreItem(StoreItemCreate request, {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/store/items'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -39,10 +40,11 @@ extension StoreApi on LangGraphClient {
   ///
   /// [namespace] is the namespace the item belongs to.
   /// [id] is the unique identifier of the item within its namespace.
+  /// [token] is the authentication token for the request.
   ///
   /// Returns the requested [StoreItem].
   /// Throws [LangGraphApiException] if the item is not found or the request fails.
-  Future<StoreItem> getStoreItem(String namespace, String id) async {
+  Future<StoreItem> getStoreItem(String namespace, String id, {String? token}) async {
     try {
       final queryParams = {
         'namespace': namespace,
@@ -51,7 +53,7 @@ extension StoreApi on LangGraphClient {
 
       final response = await client.get(
         Uri.parse('$baseUrl/store/items').replace(queryParameters: queryParams),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
@@ -70,14 +72,15 @@ extension StoreApi on LangGraphClient {
   /// Searches for items in the store.
   ///
   /// [request] contains the namespace and optional metadata filters.
+  /// [token] is the authentication token for the request.
   ///
   /// Returns a list of [StoreItem] objects matching the search criteria.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<List<StoreItem>> searchStoreItems(StoreItemSearch request) async {
+  Future<List<StoreItem>> searchStoreItems(StoreItemSearch request, {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/store/items/search'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
       );
 
@@ -99,10 +102,11 @@ extension StoreApi on LangGraphClient {
   ///
   /// [namespace] is the namespace the item belongs to.
   /// [id] is the unique identifier of the item within its namespace.
+  /// [token] is the authentication token for the request.
   ///
   /// Returns void on successful deletion.
   /// Throws [LangGraphApiException] if the item is not found or the request fails.
-  Future<void> deleteStoreItem(String namespace, String id) async {
+  Future<void> deleteStoreItem(String namespace, String id, {String? token}) async {
     try {
       final queryParams = {
         'namespace': namespace,
@@ -111,7 +115,7 @@ extension StoreApi on LangGraphClient {
 
       final response = await client.delete(
         Uri.parse('$baseUrl/store/items').replace(queryParameters: queryParams),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode != 200) {
@@ -128,13 +132,15 @@ extension StoreApi on LangGraphClient {
 
   /// Lists all namespaces in the store.
   ///
+  /// [token] is the authentication token for the request.
+  /// 
   /// Returns a list of namespace names.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<List<String>> listStoreNamespaces() async {
+  Future<List<String>> listStoreNamespaces({String? token}) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/store/namespaces'),
-        headers: headers,
+        headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
       if (response.statusCode == 200) {
