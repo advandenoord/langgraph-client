@@ -116,6 +116,8 @@ extension ThreadApi on LangGraphClient {
   /// [limit] maximum number of results to return (default: 10).
   /// [offset] number of results to skip for pagination (default: 0).
   /// [token] is a security token that can be used by LangGraph Auth.
+  /// [sortOrder] is the order in which to sort results.
+  /// [sortBy] is the field to sort by.
   ///
   /// Returns a list of [Thread] objects matching the search criteria.
   /// Throws [LangGraphApiException] if the request fails.
@@ -126,6 +128,8 @@ extension ThreadApi on LangGraphClient {
     int limit = 10,
     int offset = 0,
     String? token,
+    String? sortOrder,
+    String? sortBy,
   }) async {
     try {
       final response = await client.post(
@@ -137,6 +141,8 @@ extension ThreadApi on LangGraphClient {
           if (status != null) 'status': status,
           'limit': limit,
           'offset': offset,
+          if (sortOrder != null) 'sort_order': sortOrder,
+          if (sortBy != null) 'sort_by': sortBy,
         }),
       );
 
@@ -236,7 +242,8 @@ extension ThreadApi on LangGraphClient {
   /// Returns a map with thread IDs as keys and their new state values as values.
   /// Throws [LangGraphApiException] if the request fails.
   Future<Map<String, dynamic>> bulkUpdateThreadState(
-      Map<String, dynamic> updates, {String? token}) async {
+      Map<String, dynamic> updates,
+      {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/threads/state/bulk'),
@@ -266,7 +273,8 @@ extension ThreadApi on LangGraphClient {
   /// Returns the thread state at the specified checkpoint.
   /// Throws [LangGraphApiException] if the request fails.
   Future<ThreadState> getThreadStateCheckpoint(
-      String threadId, String checkpointId, {String? token}) async {
+      String threadId, String checkpointId,
+      {String? token}) async {
     try {
       final queryParams = {
         'checkpoint_id': checkpointId,

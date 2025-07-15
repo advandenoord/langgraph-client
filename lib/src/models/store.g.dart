@@ -7,7 +7,8 @@ part of 'store.dart';
 // **************************************************************************
 
 StoreItem _$StoreItemFromJson(Map<String, dynamic> json) => StoreItem(
-      namespace: json['namespace'] as String,
+      namespace:
+          (json['namespace'] as List<dynamic>).map((e) => e as String).toList(),
       id: json['id'] as String,
       data: json['data'] as Map<String, dynamic>,
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -26,7 +27,8 @@ Map<String, dynamic> _$StoreItemToJson(StoreItem instance) => <String, dynamic>{
 
 StoreItemCreate _$StoreItemCreateFromJson(Map<String, dynamic> json) =>
     StoreItemCreate(
-      namespace: json['namespace'] as String,
+      namespace:
+          (json['namespace'] as List<dynamic>).map((e) => e as String).toList(),
       id: json['id'] as String,
       data: json['data'] as Map<String, dynamic>,
       metadata: json['metadata'] as Map<String, dynamic>?,
@@ -44,8 +46,9 @@ Map<String, dynamic> _$StoreItemCreateToJson(StoreItemCreate instance) =>
 
 StoreItemSearch _$StoreItemSearchFromJson(Map<String, dynamic> json) =>
     StoreItemSearch(
-      namespace: json['namespace'] as String,
-      metadata: json['metadata'] as Map<String, dynamic>?,
+      namespace:
+          (json['namespace'] as List<dynamic>).map((e) => e as String).toList(),
+      filter: json['filter'] as Map<String, dynamic>?,
       limit: (json['limit'] as num?)?.toInt() ?? 10,
       offset: (json['offset'] as num?)?.toInt() ?? 0,
     );
@@ -53,7 +56,7 @@ StoreItemSearch _$StoreItemSearchFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$StoreItemSearchToJson(StoreItemSearch instance) =>
     <String, dynamic>{
       'namespace': instance.namespace,
-      if (instance.metadata case final value?) 'metadata': value,
+      if (instance.filter case final value?) 'filter': value,
       'limit': instance.limit,
       'offset': instance.offset,
     };

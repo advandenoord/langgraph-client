@@ -8,7 +8,7 @@ part 'store.g.dart';
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class StoreItem {
   /// The namespace this item belongs to.
-  final String namespace;
+  final List<String> namespace;
 
   /// The unique identifier of this item within its namespace.
   final String id;
@@ -49,7 +49,7 @@ class StoreItem {
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class StoreItemCreate {
   /// The namespace for this item.
-  final String namespace;
+  final List<String> namespace;
 
   /// The unique identifier for this item within its namespace.
   final String id;
@@ -87,10 +87,10 @@ class StoreItemCreate {
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class StoreItemSearch {
   /// The namespace to search in.
-  final String namespace;
+  final List<String> namespace;
 
   /// Optional metadata filter to match against item metadata.
-  final Map<String, dynamic>? metadata;
+  final Map<String, dynamic>? filter;
 
   /// Maximum number of results to return.
   final int limit;
@@ -101,7 +101,7 @@ class StoreItemSearch {
   /// Creates a new store item search request.
   StoreItemSearch({
     required this.namespace,
-    this.metadata,
+    this.filter,
     this.limit = 10,
     this.offset = 0,
   });

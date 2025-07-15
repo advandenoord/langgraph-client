@@ -15,7 +15,8 @@ extension StoreApi on LangGraphClient {
   ///
   /// Returns the created [StoreItem].
   /// Throws [LangGraphApiException] if the request fails.
-  Future<StoreItem> createStoreItem(StoreItemCreate request, {String? token}) async {
+  Future<StoreItem> createStoreItem(StoreItemCreate request,
+      {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/store/items'),
@@ -44,7 +45,8 @@ extension StoreApi on LangGraphClient {
   ///
   /// Returns the requested [StoreItem].
   /// Throws [LangGraphApiException] if the item is not found or the request fails.
-  Future<StoreItem> getStoreItem(String namespace, String id, {String? token}) async {
+  Future<StoreItem> getStoreItem(List<String> namespace, String id,
+      {String? token}) async {
     try {
       final queryParams = {
         'namespace': namespace,
@@ -76,7 +78,8 @@ extension StoreApi on LangGraphClient {
   ///
   /// Returns a list of [StoreItem] objects matching the search criteria.
   /// Throws [LangGraphApiException] if the request fails.
-  Future<List<StoreItem>> searchStoreItems(StoreItemSearch request, {String? token}) async {
+  Future<List<StoreItem>> searchStoreItems(StoreItemSearch request,
+      {String? token}) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/store/items/search'),
@@ -106,7 +109,8 @@ extension StoreApi on LangGraphClient {
   ///
   /// Returns void on successful deletion.
   /// Throws [LangGraphApiException] if the item is not found or the request fails.
-  Future<void> deleteStoreItem(String namespace, String id, {String? token}) async {
+  Future<void> deleteStoreItem(List<String> namespace, String id,
+      {String? token}) async {
     try {
       final queryParams = {
         'namespace': namespace,
@@ -114,8 +118,9 @@ extension StoreApi on LangGraphClient {
       };
 
       final response = await client.delete(
-        Uri.parse('$baseUrl/store/items').replace(queryParameters: queryParams),
+        Uri.parse('$baseUrl/store/items'),
         headers: token == null ? headers : getHeadersWithToken(token: token),
+        body: jsonEncode(queryParams),
       );
 
       if (response.statusCode != 200) {
@@ -133,7 +138,7 @@ extension StoreApi on LangGraphClient {
   /// Lists all namespaces in the store.
   ///
   /// [token] is the authentication token for the request.
-  /// 
+  ///
   /// Returns a list of namespace names.
   /// Throws [LangGraphApiException] if the request fails.
   Future<List<String>> listStoreNamespaces({String? token}) async {

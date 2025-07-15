@@ -29,14 +29,14 @@ void main() {
     test('createStoreItem creates a store item', () async {
       // Arrange
       final request = StoreItemCreate(
-        namespace: 'test-namespace',
+        namespace: ['test', 'namespace'],
         id: 'test-id',
         data: {'key': 'value'},
         metadata: {'tag': 'test'},
       );
 
       final responseData = {
-        'namespace': 'test-namespace',
+        'namespace': ['test', 'namespace'],
         'id': 'test-id',
         'data': {'key': 'value'},
         'metadata': {'tag': 'test'},
@@ -54,7 +54,7 @@ void main() {
       final result = await client.createStoreItem(request);
 
       // Assert
-      expect(result.namespace, 'test-namespace');
+      expect(result.namespace, ['test', 'namespace']);
       expect(result.id, 'test-id');
       expect(result.data, {'key': 'value'});
       expect(result.metadata, {'tag': 'test'});
@@ -67,7 +67,7 @@ void main() {
 
     test('getStoreItem fetches a store item', () async {
       // Arrange
-      final namespace = 'test-namespace';
+      final namespace = ['test', 'namespace'];
       final id = 'test-id';
       final responseData = {
         'namespace': namespace,
@@ -101,13 +101,13 @@ void main() {
     test('searchStoreItems searches for store items', () async {
       // Arrange
       final request = StoreItemSearch(
-        namespace: 'test-namespace',
-        metadata: {'tag': 'test'},
+        namespace: ['test', 'namespace'],
+        filter: {'tag': 'test'},
       );
 
       final responseData = [
         {
-          'namespace': 'test-namespace',
+          'namespace': ['test', 'namespace'],
           'id': 'item-1',
           'data': {'key': 'value1'},
           'metadata': {'tag': 'test'},
@@ -115,7 +115,7 @@ void main() {
           'updated_at': '2023-01-01T00:00:00.000Z',
         },
         {
-          'namespace': 'test-namespace',
+          'namespace': ['test', 'namespace'],
           'id': 'item-2',
           'data': {'key': 'value2'},
           'metadata': {'tag': 'test'},
@@ -146,7 +146,7 @@ void main() {
 
     test('deleteStoreItem deletes a store item', () async {
       // Arrange
-      final namespace = 'test-namespace';
+      final namespace = ['test', 'namespace'];
       final id = 'test-id';
 
       when(mockClient.delete(
