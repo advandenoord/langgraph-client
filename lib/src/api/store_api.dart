@@ -40,17 +40,17 @@ extension StoreApi on LangGraphClient {
   /// Gets an item from the store by namespace and ID.
   ///
   /// [namespace] is the namespace the item belongs to.
-  /// [id] is the unique identifier of the item within its namespace.
+  /// [key] is the unique identifier of the item within its namespace.
   /// [token] is the authentication token for the request.
   ///
   /// Returns the requested [StoreItem].
   /// Throws [LangGraphApiException] if the item is not found or the request fails.
-  Future<StoreItem> getStoreItem(List<String> namespace, String id,
+  Future<StoreItem> getStoreItem(List<String> namespace, String key,
       {String? token}) async {
     try {
       final queryParams = {
         'namespace': namespace,
-        'id': id,
+        'key': key,
       };
 
       final response = await client.get(
@@ -104,17 +104,17 @@ extension StoreApi on LangGraphClient {
   /// Deletes an item from the store.
   ///
   /// [namespace] is the namespace the item belongs to.
-  /// [id] is the unique identifier of the item within its namespace.
+  /// [key] is the unique identifier of the item within its namespace.
   /// [token] is the authentication token for the request.
   ///
   /// Returns void on successful deletion.
   /// Throws [LangGraphApiException] if the item is not found or the request fails.
-  Future<void> deleteStoreItem(List<String> namespace, String id,
+  Future<void> deleteStoreItem(List<String> namespace, String key,
       {String? token}) async {
     try {
       final queryParams = {
         'namespace': namespace,
-        'id': id,
+        'key': key,
       };
 
       final response = await client.delete(
