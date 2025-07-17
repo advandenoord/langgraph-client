@@ -10,7 +10,7 @@ StoreItem _$StoreItemFromJson(Map<String, dynamic> json) => StoreItem(
       namespace:
           (json['namespace'] as List<dynamic>).map((e) => e as String).toList(),
       key: json['key'] as String,
-      data: json['data'] as Map<String, dynamic>,
+      value: json['value'] as Map<String, dynamic>,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       metadata: json['metadata'] as Map<String, dynamic>?,
@@ -19,7 +19,7 @@ StoreItem _$StoreItemFromJson(Map<String, dynamic> json) => StoreItem(
 Map<String, dynamic> _$StoreItemToJson(StoreItem instance) => <String, dynamic>{
       'namespace': instance.namespace,
       'key': instance.key,
-      'data': instance.data,
+      'value': instance.value,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt.toIso8601String(),
       if (instance.metadata case final value?) 'metadata': value,
@@ -30,7 +30,7 @@ StoreItemCreate _$StoreItemCreateFromJson(Map<String, dynamic> json) =>
       namespace:
           (json['namespace'] as List<dynamic>).map((e) => e as String).toList(),
       key: json['key'] as String,
-      data: json['data'] as Map<String, dynamic>,
+      value: json['value'] as Map<String, dynamic>,
       metadata: json['metadata'] as Map<String, dynamic>?,
       ifExists: json['if_exists'] as String? ?? 'raise',
     );
@@ -39,7 +39,7 @@ Map<String, dynamic> _$StoreItemCreateToJson(StoreItemCreate instance) =>
     <String, dynamic>{
       'namespace': instance.namespace,
       'key': instance.key,
-      'data': instance.data,
+      'value': instance.value,
       if (instance.metadata case final value?) 'metadata': value,
       'if_exists': instance.ifExists,
     };

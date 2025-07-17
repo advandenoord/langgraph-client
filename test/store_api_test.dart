@@ -31,7 +31,7 @@ void main() {
       final request = StoreItemCreate(
         namespace: ['test', 'namespace'],
         key: 'test-id',
-        data: {'key': 'value'},
+        value: {'key': 'value'},
         metadata: {'tag': 'test'},
       );
 
@@ -56,7 +56,7 @@ void main() {
       // Assert
       expect(result.namespace, ['test', 'namespace']);
       expect(result.key, 'test-id');
-      expect(result.data, {'key': 'value'});
+      expect(result.value, {'key': 'value'});
       expect(result.metadata, {'tag': 'test'});
       verify(mockClient.post(
         Uri.parse('$baseUrl/store/items'),
@@ -90,7 +90,7 @@ void main() {
       // Assert
       expect(result.namespace, namespace);
       expect(result.key, id);
-      expect(result.data, {'key': 'value'});
+      expect(result.value, {'key': 'value'});
       verify(mockClient.get(
         Uri.parse('$baseUrl/store/items')
             .replace(queryParameters: {'namespace': namespace, 'id': id}),

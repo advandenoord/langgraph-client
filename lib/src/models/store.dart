@@ -14,7 +14,7 @@ class StoreItem {
   final String key;
 
   /// The data stored in this item.
-  final Map<String, dynamic> data;
+  final Map<String, dynamic> value;
 
   /// Timestamp when this item was created.
   @JsonKey(name: 'created_at')
@@ -31,7 +31,7 @@ class StoreItem {
   StoreItem({
     required this.namespace,
     required this.key,
-    required this.data,
+    required this.value,
     required this.createdAt,
     required this.updatedAt,
     this.metadata,
@@ -55,7 +55,7 @@ class StoreItemCreate {
   final String key;
 
   /// The data to store in this item.
-  final Map<String, dynamic> data;
+  final Map<String, dynamic> value;
 
   /// Optional metadata to associate with this item.
   final Map<String, dynamic>? metadata;
@@ -70,7 +70,7 @@ class StoreItemCreate {
   StoreItemCreate({
     required this.namespace,
     required this.key,
-    required this.data,
+    required this.value,
     this.metadata,
     this.ifExists = 'raise',
   });
