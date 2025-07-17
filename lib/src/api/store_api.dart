@@ -24,7 +24,7 @@ extension StoreApi on LangGraphClient {
         body: jsonEncode(request.toJson()),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 204) {
         return StoreItem.fromJson(jsonDecode(response.body));
       }
       throw LangGraphApiException(
@@ -89,8 +89,9 @@ extension StoreApi on LangGraphClient {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => StoreItem.fromJson(json)).toList();
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<dynamic> newData = data['items'];
+        return newData.map((json) => StoreItem.fromJson(json)).toList();
       }
       throw LangGraphApiException(
         'Failed to search store items',
