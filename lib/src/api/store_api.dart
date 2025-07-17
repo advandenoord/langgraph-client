@@ -15,8 +15,7 @@ extension StoreApi on LangGraphClient {
   ///
   /// Returns the created [StoreItem].
   /// Throws [LangGraphApiException] if the request fails.
-  Future<StoreItem> createStoreItem(StoreItemCreate request,
-      {String? token}) async {
+  Future<void> createStoreItem(StoreItemCreate request, {String? token}) async {
     try {
       final response = await client.put(
         Uri.parse('$baseUrl/store/items'),
@@ -24,13 +23,12 @@ extension StoreApi on LangGraphClient {
         body: jsonEncode(request.toJson()),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        return StoreItem.fromJson(jsonDecode(response.body));
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw LangGraphApiException(
+          'Failed to create store item',
+          response.statusCode,
+        );
       }
-      throw LangGraphApiException(
-        'Failed to create store item',
-        response.statusCode,
-      );
     } catch (e) {
       if (e is LangGraphApiException) rethrow;
       throw LangGraphApiException('Failed to create store item: $e');
