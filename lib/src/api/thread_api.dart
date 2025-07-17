@@ -94,7 +94,7 @@ extension ThreadApi on LangGraphClient {
         headers: token == null ? headers : getHeadersWithToken(token: token),
       );
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 200 && response.statusCode != 204) {
         throw LangGraphApiException(
           'Failed to delete thread',
           response.statusCode,

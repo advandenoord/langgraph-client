@@ -11,7 +11,7 @@ class StoreItem {
   final List<String> namespace;
 
   /// The unique identifier of this item within its namespace.
-  final String id;
+  final String key;
 
   /// The data stored in this item.
   final Map<String, dynamic> data;
@@ -30,7 +30,7 @@ class StoreItem {
   /// Creates a new store item instance.
   StoreItem({
     required this.namespace,
-    required this.id,
+    required this.key,
     required this.data,
     required this.createdAt,
     required this.updatedAt,
@@ -52,7 +52,7 @@ class StoreItemCreate {
   final List<String> namespace;
 
   /// The unique identifier for this item within its namespace.
-  final String id;
+  final String key;
 
   /// The data to store in this item.
   final Map<String, dynamic> data;
@@ -60,7 +60,7 @@ class StoreItemCreate {
   /// Optional metadata to associate with this item.
   final Map<String, dynamic>? metadata;
 
-  /// How to handle existing items with the same ID (default: 'raise').
+  /// How to handle existing items with the same KEY (default: 'raise').
   ///
   /// Options are 'raise', 'update', or 'ignore'.
   @JsonKey(name: 'if_exists')
@@ -69,7 +69,7 @@ class StoreItemCreate {
   /// Creates a new store item creation request.
   StoreItemCreate({
     required this.namespace,
-    required this.id,
+    required this.key,
     required this.data,
     this.metadata,
     this.ifExists = 'raise',
@@ -87,10 +87,14 @@ class StoreItemCreate {
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class StoreItemSearch {
   /// The namespace to search in.
-  final List<String> namespace;
+  @JsonKey(name: 'namespace_prefix')
+  final List<String> namespacePrefix;
 
   /// Optional metadata filter to match against item metadata.
   final Map<String, dynamic>? filter;
+
+  /// Optional query string for semantic/vector search.
+  final String? query;
 
   /// Maximum number of results to return.
   final int limit;
@@ -100,10 +104,11 @@ class StoreItemSearch {
 
   /// Creates a new store item search request.
   StoreItemSearch({
-    required this.namespace,
+    required this.namespacePrefix,
     this.filter,
     this.limit = 10,
     this.offset = 0,
+    this.query,
   });
 
   /// Creates a store item search request from a JSON map.

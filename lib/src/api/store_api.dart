@@ -18,7 +18,7 @@ extension StoreApi on LangGraphClient {
   Future<StoreItem> createStoreItem(StoreItemCreate request,
       {String? token}) async {
     try {
-      final response = await client.post(
+      final response = await client.put(
         Uri.parse('$baseUrl/store/items'),
         headers: token == null ? headers : getHeadersWithToken(token: token),
         body: jsonEncode(request.toJson()),
@@ -48,8 +48,9 @@ extension StoreApi on LangGraphClient {
   Future<StoreItem> getStoreItem(List<String> namespace, String key,
       {String? token}) async {
     try {
+      final newNameSpace = namespace.join('.');
       final queryParams = {
-        'namespace': namespace,
+        'namespace': newNameSpace,
         'key': key,
       };
 
@@ -123,7 +124,7 @@ extension StoreApi on LangGraphClient {
         body: jsonEncode(queryParams),
       );
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 200 && response.statusCode != 204) {
         throw LangGraphApiException(
           'Failed to delete store item',
           response.statusCode,

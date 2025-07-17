@@ -30,7 +30,7 @@ void main() {
       // Arrange
       final request = StoreItemCreate(
         namespace: ['test', 'namespace'],
-        id: 'test-id',
+        key: 'test-id',
         data: {'key': 'value'},
         metadata: {'tag': 'test'},
       );
@@ -55,7 +55,7 @@ void main() {
 
       // Assert
       expect(result.namespace, ['test', 'namespace']);
-      expect(result.id, 'test-id');
+      expect(result.key, 'test-id');
       expect(result.data, {'key': 'value'});
       expect(result.metadata, {'tag': 'test'});
       verify(mockClient.post(
@@ -89,7 +89,7 @@ void main() {
 
       // Assert
       expect(result.namespace, namespace);
-      expect(result.id, id);
+      expect(result.key, id);
       expect(result.data, {'key': 'value'});
       verify(mockClient.get(
         Uri.parse('$baseUrl/store/items')
@@ -101,7 +101,7 @@ void main() {
     test('searchStoreItems searches for store items', () async {
       // Arrange
       final request = StoreItemSearch(
-        namespace: ['test', 'namespace'],
+        namespacePrefix: ['test', 'namespace'],
         filter: {'tag': 'test'},
       );
 
@@ -135,8 +135,8 @@ void main() {
 
       // Assert
       expect(results.length, 2);
-      expect(results[0].id, 'item-1');
-      expect(results[1].id, 'item-2');
+      expect(results[0].key, 'item-1');
+      expect(results[1].key, 'item-2');
       verify(mockClient.post(
         Uri.parse('$baseUrl/store/items/search'),
         headers: client.headers,
